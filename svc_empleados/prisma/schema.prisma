@@ -5,10 +5,57 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+    provider = "prisma-client"
+    output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
+}
+
+model Empleado {
+    id                Int      @id @default(autoincrement())
+    nombres           String
+    apellidos         String
+    documento         String
+    correo            String
+    fechaingreso      DateTime
+    estado            String
+    cargo             String
+    vicepresidenciaId Int
+    contratoId        Int
+
+    vicepresidencia Vicepresidencia    @relation(fields: [vicepresidenciaId], references: [id])
+    contrato        Contrato           @relation(fields: [contratoId], references: [id])
+    createdAt       DateTime           @default(now())
+    updatedAt       DateTime           @updatedAt
+    historial       HistorialLaboral[]
+}
+
+model Contrato {
+    id          Int        @id @default(autoincrement())
+    tipo        String
+    fechaInicio DateTime
+    fechaFin    DateTime?
+    empleados   Empleado[]
+}
+
+model Vicepresidencia {
+    id        Int        @id @default(autoincrement())
+    area      String
+    nombreVP  String
+    correoVP  String
+    empleados Empleado[]
+}
+
+model HistorialLaboral {
+    id          Int      @id @default(autoincrement())
+    empleadoId  Int
+    campo       String
+    anterior    String?
+    nuevo       String?
+    cambiadoPor String
+    fechaCambio DateTime @default(now())
+
+    empleado Empleado @relation(fields: [empleadoId], references: [id])
 }
