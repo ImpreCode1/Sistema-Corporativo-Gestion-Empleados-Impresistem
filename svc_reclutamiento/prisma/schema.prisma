@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RequisicionPersonal {
+  id                     Int       @id @default(autoincrement())
+  fechaSolicitud         DateTime
+  estadoPerfilCargo      String    // "Actualizado" | "Por crear"
+
+  cargoRequerido         String
+  division               String
+  area                   String
+  numeroVacantes         Int
+  convocatoriaInterna    Boolean
+  solicitaLineaCelular   Boolean
+
+  motivoVacante          String
+  reemplazaA             String?
+  funciones              String?
+  objetivoCargo          String?
+  esComercial            Boolean
+
+  conocimientosTecnicos  String?
+  certificaciones        String?
+  sede                   String
+  horario                String?
+  observaciones          String?
+
+  solicitanteNombre      String
+  solicitanteCargo       String
+  solicitanteArea        String
+
+  createdAt              DateTime  @default(now())
+
+  plataformas            RequisicionPlataforma[]
+}
+
+model RequisicionPlataforma {
+  id             Int                  @id @default(autoincrement())
+  requisicionId  Int
+  plataforma     String               // "Correo", "SAP", etc.
+  requisicion    RequisicionPersonal  @relation(fields: [requisicionId], references: [id])
+}
+
+enum EstadoPerfilCargo {
+  Actualizado
+  PorCrear
+}
+
+enum MotivoVacante {
+  Renuncia
+  Licencia
+  Promocion
+  Incapacidad
+  CargoNuevo
+  Otras
+}
+
