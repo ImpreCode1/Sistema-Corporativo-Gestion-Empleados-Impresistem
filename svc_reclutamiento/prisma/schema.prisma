@@ -48,6 +48,7 @@ model Reclutamiento {
 
   // Estado del proceso de reclutamiento (NUEVO)
   estado EstadoRequisicion @default(pendiente)
+  historialEstado ReclutamientoEstadoHistorial[]
 
   createdAt DateTime @default(now())
 }
@@ -64,4 +65,16 @@ enum EstadoRequisicion {
   publicada
   cerrada
   rechazada
+}
+
+model ReclutamientoEstadoHistorial {
+  id              Int                @id @default(autoincrement())
+  reclutamientoId Int
+  estadoAnterior  EstadoRequisicion
+  estadoNuevo     EstadoRequisicion
+  comentario      String?
+  usuario         String             // quién hizo el cambio
+  fecha           DateTime           @default(now())
+
+  reclutamiento   Reclutamiento      @relation(fields: [reclutamientoId], references: [id])
 }

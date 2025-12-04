@@ -49,7 +49,6 @@ export class ReclutamientoController {
   }
 
   @Patch(':id/estado')
-  @ApiOperation({ summary: 'Cambiar el estado de la solicitud' })
   updateEstado(@Param('id') id: string, @Body() dto: UpdateEstadoDto) {
     return this.reclutamientoService.updateEstado(Number(id), dto);
   }
@@ -58,5 +57,10 @@ export class ReclutamientoController {
   @ApiOperation({ summary: 'Eliminar una solicitud' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.reclutamientoService.remove(id);
+  }
+
+  @Get(':id/historial')
+  getHistorial(@Param('id') id: string) {
+    return this.reclutamientoService.getHistorial(Number(id));
   }
 }
