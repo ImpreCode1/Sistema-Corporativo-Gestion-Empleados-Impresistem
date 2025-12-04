@@ -1,111 +1,128 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-
-import { EstadoPerfilCargo } from '@prisma/client';
 import {
   IsString,
-  IsDateString,
   IsInt,
-  IsNotEmpty,
   IsBoolean,
   IsOptional,
   IsEnum,
+  IsDateString,
+  Min,
+  IsArray,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { EstadoPerfilCargo } from '@prisma/client';
 
 export class CreateReclutamientoDto {
+  @ApiProperty({ example: '2025-11-14' })
   @IsDateString()
-  @IsNotEmpty()
   fechaSolicitud: string;
 
+  @ApiProperty({ enum: EstadoPerfilCargo })
   @IsEnum(EstadoPerfilCargo)
   estadoPerfilCargo: EstadoPerfilCargo;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   cargoRequerido: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   division: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   area: string;
 
+  @ApiProperty()
   @IsInt()
+  @Min(1)
   numeroVacantes: number;
 
+  @ApiProperty()
   @IsBoolean()
   convocatoriaInterna: boolean;
 
-  @IsString()
-  @IsNotEmpty()
-  plataformas: string;
+  @ApiProperty({
+    type: [String],
+    example: ['Correo Corporativo', 'Teams'],
+  })
+  @IsArray()
+  @IsString({ each: true })
+  plataformas: string[];
 
+  @ApiProperty()
   @IsBoolean()
   solicitaLineaCelular: boolean;
 
+  // Motivo
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   motivoVacante: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  reemplazaA: string;
+  reemplazaA?: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  funciones: string;
+  funciones: string; // OBLIGATORIO
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  objetivoCargo: string;
+  objetivoCargo: string; // OBLIGATORIO
 
+  @ApiProperty()
   @IsBoolean()
   esComercial: boolean;
 
-  @IsString()
+  @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
   infoAdicional?: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  kpi: string;
+  kpi: string; // OBLIGATORIO
 
+  @ApiProperty()
   @IsBoolean()
   financieraVoBo: boolean;
 
+  @ApiProperty()
   @IsBoolean()
   ceoVoBo: boolean;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   conocimientosTecnicos: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   certificaciones: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   sede: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   horario: string;
 
-  @IsString()
+  @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
   observaciones?: string;
 
+  // Solicitante
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   solicitanteNombre: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   solicitanteCargo: string;
 
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   solicitanteArea: string;
 }

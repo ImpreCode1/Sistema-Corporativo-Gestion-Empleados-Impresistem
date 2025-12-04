@@ -1,39 +1,89 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/require-await */
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReclutamientoDto } from './dto/createReclutamiento.dto';
+import { UpdateReclutamientoDto } from './dto/updateReclutamiento.dto';
+import { UpdateEstadoDto } from './dto/updateEstado.dto';
 
 @Injectable()
 export class ReclutamientoService {
   constructor(private prisma: PrismaService) {}
 
+  // Crear requisición
   async create(data: CreateReclutamientoDto) {
-    return this.prisma.reclutamiento.create({
-      data,
+    try {
+      return await this.prisma.reclutamiento.create({
+        data: {
+          ...data,
+          fechaSolicitud: new Date(data.fechaSolicitud),
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException('Error al crear la requisición', {
+        cause: error,
+      });
+    }
+  }
+
+  // Listar todas
+  async findAll() {
+    return this.prisma.reclutamiento.findMany({
+      orderBy: { id: 'desc' },
     });
   }
 
-  async findAll() {
-    return this.prisma.reclutamiento.findMany();
-  }
-
+  // Buscar una por ID
   async findOne(id: number) {
-    return this.prisma.reclutamiento.findUnique({
+    const req = await this.prisma.reclutamiento.findUnique({
       where: { id },
     });
+
+    if (!req) {
+      throw new NotFoundException(`Requisición con ID ${id} no encontrada`);
+    }
+
+    return req;
   }
 
-  async update(id: number, data: Partial<CreateReclutamientoDto>) {
+  // Actualizar requisición
+  async update(id: number, data: UpdateReclutamientoDto) {
+    await this.findOne(id); // valida existencia
+
+    try {
+      return await this.prisma.reclutamiento.update({
+        where: { id },
+        data: {
+          ...data,
+          fechaSolicitud: data.fechaSolicitud
+            ? new Date(data.fechaSolicitud)
+            : undefined,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException('Error al actualizar la requisición', {
+        cause: error,
+      });
+    }
+  }
+
+  // Cambiar estado del workflow
+  async updateEstado(id: number, dto: UpdateEstadoDto) {
+    await this.findOne(id);
+
     return this.prisma.reclutamiento.update({
       where: { id },
-      data,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      data: { estado: dto.estado },
     });
   }
 
+  // Eliminar requisición
   async remove(id: number) {
+    await this.findOne(id);
+
     return this.prisma.reclutamiento.delete({
       where: { id },
     });

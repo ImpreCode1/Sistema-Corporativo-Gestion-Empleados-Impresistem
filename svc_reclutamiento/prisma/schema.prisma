@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,37 +8,46 @@ datasource db {
 }
 
 model Reclutamiento {
-  id                Int      @id @default(autoincrement())
+  id                Int              @id @default(autoincrement())
   fechaSolicitud    DateTime
   estadoPerfilCargo EstadoPerfilCargo
 
+  // Información del cargo
   cargoRequerido       String
   division             String
   area                 String
   numeroVacantes       Int
   convocatoriaInterna  Boolean
-  plataformas          String
+  plataformas          String[]
   solicitaLineaCelular Boolean
 
+  // Motivo
   motivoVacante  String
-  reemplazaA     String
+  reemplazaA     String?
   funciones      String
   objetivoCargo  String
   esComercial    Boolean
+
+  // Info adicional / KPIs
   infoAdicional  String?
   kpi            String
   financieraVoBo Boolean
   ceoVoBo        Boolean
 
+  // Información técnica
   conocimientosTecnicos String
   certificaciones       String
   sede                  String
   horario               String
   observaciones         String?
 
+  // Solicitante
   solicitanteNombre String
   solicitanteCargo  String
   solicitanteArea   String
+
+  // Estado del proceso de reclutamiento (NUEVO)
+  estado EstadoRequisicion @default(pendiente)
 
   createdAt DateTime @default(now())
 }
@@ -52,4 +55,13 @@ model Reclutamiento {
 enum EstadoPerfilCargo {
   Actualizado
   PorCrear
+}
+
+enum EstadoRequisicion {
+  pendiente
+  en_revision
+  aprobada
+  publicada
+  cerrada
+  rechazada
 }
