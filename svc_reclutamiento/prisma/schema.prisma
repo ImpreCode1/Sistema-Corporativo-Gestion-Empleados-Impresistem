@@ -13,57 +13,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model RequisicionPersonal {
-  id                     Int       @id @default(autoincrement())
-  fechaSolicitud         DateTime
-  estadoPerfilCargo      String    // "Actualizado" | "Por crear"
+model Reclutamiento {
+  id                Int      @id @default(autoincrement())
+  fechaSolicitud    DateTime
+  estadoPerfilCargo EstadoPerfilCargo
 
-  cargoRequerido         String
-  division               String
-  area                   String
-  numeroVacantes         Int
-  convocatoriaInterna    Boolean
-  solicitaLineaCelular   Boolean
+  cargoRequerido       String
+  division             String
+  area                 String
+  numeroVacantes       Int
+  convocatoriaInterna  Boolean
+  plataformas          String
+  solicitaLineaCelular Boolean
 
-  motivoVacante          String
-  reemplazaA             String?
-  funciones              String?
-  objetivoCargo          String?
-  esComercial            Boolean
+  motivoVacante  String
+  reemplazaA     String
+  funciones      String
+  objetivoCargo  String
+  esComercial    Boolean
+  infoAdicional  String?
+  kpi            String
+  financieraVoBo Boolean
+  ceoVoBo        Boolean
 
-  conocimientosTecnicos  String?
-  certificaciones        String?
-  sede                   String
-  horario                String?
-  observaciones          String?
+  conocimientosTecnicos String
+  certificaciones       String
+  sede                  String
+  horario               String
+  observaciones         String?
 
-  solicitanteNombre      String
-  solicitanteCargo       String
-  solicitanteArea        String
+  solicitanteNombre String
+  solicitanteCargo  String
+  solicitanteArea   String
 
-  createdAt              DateTime  @default(now())
-
-  plataformas            RequisicionPlataforma[]
-}
-
-model RequisicionPlataforma {
-  id             Int                  @id @default(autoincrement())
-  requisicionId  Int
-  plataforma     String               // "Correo", "SAP", etc.
-  requisicion    RequisicionPersonal  @relation(fields: [requisicionId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum EstadoPerfilCargo {
   Actualizado
   PorCrear
 }
-
-enum MotivoVacante {
-  Renuncia
-  Licencia
-  Promocion
-  Incapacidad
-  CargoNuevo
-  Otras
-}
-

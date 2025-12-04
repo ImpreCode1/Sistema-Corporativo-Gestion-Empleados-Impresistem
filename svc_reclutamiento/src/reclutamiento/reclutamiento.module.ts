@@ -4,6 +4,6 @@ import { ReclutamientoController } from './reclutamiento.controller';
 
 @Module({
   providers: [ReclutamientoService],
-  controllers: [ReclutamientoController]
+  controllers: [ReclutamientoController],
 })
 export class ReclutamientoModule {}
