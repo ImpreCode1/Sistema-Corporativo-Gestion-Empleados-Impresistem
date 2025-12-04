@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Injectable,
   NotFoundException,
@@ -7,6 +10,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateReclutamientoDto } from './dto/createReclutamiento.dto';
 import { UpdateReclutamientoDto } from './dto/updateReclutamiento.dto';
 import { UpdateEstadoDto } from './dto/updateEstado.dto';
+import { ALLOWED_TRANSITIONS } from './workflow.transitions';
+import { EstadoRequisicion } from '@prisma/client';
 
 @Injectable()
 export class ReclutamientoService {
@@ -71,12 +76,22 @@ export class ReclutamientoService {
 
   // Cambiar estado del workflow
   async updateEstado(id: number, dto: UpdateEstadoDto) {
-    await this.findOne(id);
+    const requisicion = await this.findOne(id);
+
+    const estadoActual = requisicion.estado;
+    const estadoNuevo = dto.estado as EstadoRequisicion;
+
+    const permitidos = ALLOWED_TRANSITIONS[estadoActual];
+
+    if (!permitidos.includes(estadoNuevo)) {
+      throw new BadRequestException(
+        `No se puede cambiar de estado "${estadoActual}" a "${estadoNuevo}". Transiciones permitidas: ${permitidos.join(', ')}`,
+      );
+    }
 
     return this.prisma.reclutamiento.update({
       where: { id },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      data: { estado: dto.estado },
+      data: { estado: estadoNuevo },
     });
   }
 

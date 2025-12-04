@@ -50,11 +50,8 @@ export class ReclutamientoController {
 
   @Patch(':id/estado')
   @ApiOperation({ summary: 'Cambiar el estado de la solicitud' })
-  updateEstado(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateEstadoDto,
-  ) {
-    return this.reclutamientoService.updateEstado(id, dto);
+  updateEstado(@Param('id') id: string, @Body() dto: UpdateEstadoDto) {
+    return this.reclutamientoService.updateEstado(Number(id), dto);
   }
 
   @Delete(':id')
